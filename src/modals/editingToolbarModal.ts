@@ -196,6 +196,26 @@ function getHotkey(app: App, cmdid: string, highlight = false) {
   if (arr) {
     let defkeys = arr.hotkeys ? [[getNestedObject(arr.hotkeys, [0, 'modifiers'])],
     [getNestedObject(arr.hotkeys, [0, 'key'])]] : undefined;
+
+    // If the default key combination was not found using the findCommand() method,
+    // try to look it up directly in the entire commands object
+    if (!defkeys) {
+      const commands = app.commands.commands;
+      for (const key in commands) {
+        // The Obsidian command needs to be checked, not the editing-toolbar plugin's command
+        // e.g. "editor:toggle-bold", not "editing-toolbar:toggle-bold"
+        const cmdIdName = cmdid.split(':').slice(-1)[0];  // Get the last part of the command ID
+        const obsidianCmdId = 'editor:' + cmdIdName;      // Construct the Obsidian command ID with 'editor:' prefix
+        
+        // Check that this is the equivalent Obsidian default key command as the cmdid
+        // and check that the command has hotkeys defined
+        if (commands[key].id === obsidianCmdId && commands[key].hotkeys) {
+          defkeys = commands[key].hotkeys ? [[getNestedObject(commands[key].hotkeys, [0, 'modifiers'])],
+          [getNestedObject(commands[key].hotkeys, [0, 'key'])]] : undefined;
+        }
+      }
+    }
+    
     // @ts-ignore
     let ck = app.hotkeyManager.customKeys[arr.id];
     var hotkeys = ck ? [[getNestedObject(ck, [0, 'modifiers'])], [getNestedObject(ck, [0, 'key'])]] : undefined;
