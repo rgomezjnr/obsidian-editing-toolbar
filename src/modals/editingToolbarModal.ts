@@ -1226,7 +1226,7 @@ export function editingToolbarPopover(
       const getLocalizedLabel = (label: string): string => t(label as any);
       const getLocalizedTooltip = (label: string, hotkey: string): string => {
         const localizedLabel = getLocalizedLabel(label);
-        return hotkey === "–" ? localizedLabel : `${localizedLabel}(${hotkey})`;
+        return hotkey === "–" ? localizedLabel : `${localizedLabel} (${hotkey})`;
       };
 
       currentCommands.forEach((item, index) => {
